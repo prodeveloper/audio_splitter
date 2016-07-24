@@ -22,7 +22,9 @@ def export_file(song_slice,folder_name,file_name):
     song_slice.export('{}/{}'.format(folder_name,file_name))
 
 def name_file(sec):
-    return 'Label{}.mp3'.format(sec)
+    if sec <10:
+        return '0{}Label.mp3'.format(sec) ##Assists in ordering of videos
+    return '{}Label.mp3'.format(sec)
 
 def boost_sound(song):
     return song + 5
