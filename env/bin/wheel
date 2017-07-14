@@ -1,4 +1,4 @@
-#!/Users/chencha/Documents/dev/splitter/env/bin/python3.5
+#!/home/jacob/Documents/dev/audio_splitter/env/bin/python3
 
 # -*- coding: utf-8 -*-
 import re
