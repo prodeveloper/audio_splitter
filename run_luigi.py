@@ -18,7 +18,7 @@ class Start(luigi.Task):
 class Runner(luigi.Task):
  
     def requires(self):
-        return [DeleteUnneeded()]
+        return [TransferDropbox()]
  
     def output(self):
         return luigi.LocalTarget("output.json")
@@ -44,6 +44,10 @@ class PrepFileList(luigi.Task):
     def run(self):
         files_list = glob.glob("*.mp3")
         data = {"download":"success","files_list":files_list}
+        folders_list = []
+        for files in files_list:
+            folders_list.append(files.replace(".mp3",""))
+        data = {"download":"success","files_list":files_list,"folders_list":folders_list}
         with self.output().open('r') as f:
             existing = json.load(f)
         with self.output().open('w') as f:
@@ -58,7 +62,9 @@ class Converter(luigi.Task):
     def output(self):
         return luigi.LocalTarget("output.json")
     def convert_file(self,file_name):
+        #pass
         sh.python("py_split.py",file_name)
+                                
  
     def run(self):
         data = {"convert":"True"}
@@ -83,6 +89,25 @@ class DeleteUnneeded(luigi.Task):
             existing = json.load(f)
             for song in existing['files_list']:
                 sh.rm(song)
+        with self.output().open('w') as f:
+            existing.update(data)
+            json.dump(existing,f)
+
+class TransferDropbox(luigi.Task):
+    dropbox_folder = "/home/jacob/Dropbox/Podcasts"
+    def requires(self):
+        return [DeleteUnneeded()]
+ 
+    def output(self):
+        return luigi.LocalTarget("output.json")
+ 
+    def run(self):
+        data = {"convert":"True"}
+        with self.output().open('r') as f:
+            existing = json.load(f)
+            for folders in existing['folders_list']:
+                sh.mv(folders,self.dropbox_folder)
+                                
         with self.output().open('w') as f:
             existing.update(data)
             json.dump(existing,f)
