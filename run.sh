@@ -3,4 +3,4 @@ cd env/bin
 source activate
 cd ..
 cd ..
-python run_luigi.py
+python run_luigi.py Runner --local-scheduler
